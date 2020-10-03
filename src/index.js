@@ -18,8 +18,8 @@ class MaxPQ{
  
       delMax() {
         let max = this.pq[1]
-        this.exch(1,this.N--)
-        this.pq.length = this.N + 1
+        this.exch(1,this.N)
+        this.pq.pop()
         this._sink(1)
         return max
       }
@@ -43,7 +43,7 @@ class MaxPQ{
       _sink(k) {
           while(2*k <= this.N) {
               let j = 2*k
-              if (j < this.N && !this.less(j,j+1)) {
+              if (j < this.N && this.less(j,j+1)) {
                     j++  
               }
               if (!this.less(k,j)) {
