@@ -1,29 +1,24 @@
 function bubbleSort(arr = []) {
-   for (let i = 0; i < arr.length;i++){
+   // 记录最后一次交换的位置
+   let lastExchangeIndex = 0;
+   // 无序列的边界 每次比较只需要比到这里为止
+   let sortBorder = arr.length - 1
+   for (let i = 0; i < arr.length - 1;i++){
          let flag = false;
-         for (let j = 0; j < arr.length - 1;j++) {
+         for (let j = 0; j < sortBorder;j++) {
               if(arr[j] > arr[j + 1] ) {
                   let temp = arr[j + 1]
                   arr[j+1] = arr[j]
                   arr[j] = temp
                   flag = true;
+                  // 更新为最后一次交换元素的位置
+                  lastExchangeIndex = j
               } 
          }
+         sortBorder = lastExchangeIndex
          if(!flag) {
                break
          }
-         flag = false;
-         for (let j = arr.length - 1; j > 0;j--) {
-            if(arr[j-1] > arr[j] ) {
-                let temp = arr[j - 1]
-                arr[j-1] = arr[j]
-                arr[j] = temp
-                flag = true;
-            } 
-       }
-       if(!flag) {
-            break
-      }
    }
 }
 
