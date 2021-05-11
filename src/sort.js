@@ -60,7 +60,7 @@ function quickSort(arr = [], start, end) {
          return
    }
     // 分治求出中间基准位置的左边(其中基准坐标左边所有的元素比基准元素小 基本右边所有的元素比基准元素大)
-   let pivotIndex = partition(arr, start, end)
+   let pivotIndex = singlePartition(arr, start, end)
    quickSort(arr, start, pivotIndex - 1)
    quickSort(arr, pivotIndex+1, end)      
 }
@@ -95,6 +95,23 @@ function partition(arr, start, end) {
       return left
 }
 
+// 快速排序单边循环
+function singlePartition(arr, start, end) {
+      const pivot = arr[start] // 取第一个作为基准
+      let mark = start
+      for(let i = start+1; i <= end; i++) {
+            if(arr[i] < pivot) {
+                  mark++
+                  const temp = arr[i]
+                  arr[i] = arr[mark]
+                  arr[mark] = temp
+            }
+      }
+
+      arr[start] = arr[mark]
+      arr[mark] = pivot
+      return mark
+}
 let a = [2,3,0,4,1,5,6,7,9,8]
 // cockTailSort(a)
 quickSort(a,0,a.length - 1)
