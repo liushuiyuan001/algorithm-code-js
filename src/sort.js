@@ -55,6 +55,47 @@ function cockTailSort(arr = []) {
     }
 }
 
+function quickSort(arr = [], start, end) {
+   if(start >= end) {
+         return
+   }
+    // 分治求出中间基准位置的左边(其中基准坐标左边所有的元素比基准元素小 基本右边所有的元素比基准元素大)
+   let pivotIndex = partition(arr, start, end)
+   quickSort(arr, start, pivotIndex - 1)
+   quickSort(arr, pivotIndex+1, end)      
+}
+
+function partition(arr, start, end) {
+      // 先找一个基本元素
+      const pivot = arr[start]
+      let left = start
+      let right = end
+      while (left != right) {
+         // 从右往左循环
+         while(left < right && arr[right] > pivot) {
+               right--
+         }
+         // 从左往右循环
+         while(left < right && arr[left] <= pivot) {
+               left++
+         }
+         // 交换left和right指针所指向的元素
+         if(left < right) {
+               const temp = arr[right]
+               arr[right] = arr[left]
+               arr[left] = temp
+         }
+
+      }
+      
+      // 交换基准元素和指针重合点
+      arr[start] =  arr[left]
+      arr[left] = pivot
+
+      return left
+}
+
 let a = [2,3,0,4,1,5,6,7,9,8]
-cockTailSort(a)
+// cockTailSort(a)
+quickSort(a,0,a.length - 1)
 console.log(a)
