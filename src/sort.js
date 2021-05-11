@@ -96,6 +96,7 @@ function partition(arr, start, end) {
 }
 
 // 快速排序单边循环
+// 每次循环把小的放在左边
 function singlePartition(arr, start, end) {
       const pivot = arr[start] // 取第一个作为基准
       let mark = start
