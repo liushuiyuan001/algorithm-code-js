@@ -130,7 +130,89 @@ function heapSort(arr = []) {
             downAdjust(arr,0,i)
       }
 }
+
+function countSort(arr = []) {
+      let min  =  arr[0]
+      let max = arr[0]
+      for(let i  = 1; i < arr.length; i++) {
+         if(arr[i] < min) {
+               min = arr[i]
+         }
+         if(arr[i] > max) {
+               max = arr[i]
+         }
+      }
+      const d = max - min
+      // 创建统计数组并统计对应元素的个数
+      let countArr = new Array(d+1)
+      countArr.fill(0)
+      for(let i = 0; i < countArr.length;i++) {
+            countArr[arr[i]-min]++  
+      }
+
+      console.log('countArr', countArr)
+
+      // 统计数组并变形 后面的元素等于前面的元素的之和
+      for(let i = 1; i < countArr.length; i++) {
+          countArr[i] += countArr[i-1]
+      }
+
+      // 倒序遍历原始数列 从统计数组找到正确位置 输出到结果数组
+      let sortArr = []
+      for(let i = arr.length - 1; i >= 0; i--) {
+           sortArr[countArr[arr[i] - min] - 1] = arr[i]
+           countArr[arr[i] - min]--
+      }
+      return sortArr
+}
+
+function bucketSort(arr = []) {
+      // 1.得到数列的最大值和最小值 并计算差值d
+      let min = arr[0]
+      let max = arr[0]
+      for(let i = 1; i < arr.length; i++) {
+            if(arr[i] < min) {
+                  min = arr[i]
+            }
+            if(arr[i] > max) {
+                  max = arr[i]
+            }
+      }
+      const d = max - min
+      // 2.初始化桶
+      const bucketNum = arr.length
+      let bucketList = []
+      // 3.遍历原始数组 
+      for(let i = 0; i < arr.length; i++) {
+          const num = parseInt((arr[i] - min) * (bucketNum - 1) / d)
+          if (typeof bucketList[num] === 'undefined') {
+            bucketList[num] = []
+          }
+          bucketList[num].push(arr[i])
+      }
+      // 4.对每个桶内部进行排序
+      for (let i = 0; i < bucketList.length; i++) {
+            bucketList[i] && bucketList[i].sort()
+      }
+
+      // 5.输出全部元素
+      let sortedArr = []
+      let index = 0
+      for (const list of bucketList) {
+            if(!list) {
+                  continue
+            }
+            for (const item of list) {
+                  sortedArr[index] = item
+                  index++
+            }
+      }
+      return sortedArr
+}
+
 let a = [2,3,0,4,1,5,6,7,9,8]
 // cockTailSort(a)
-heapSort(a,0,a.length - 1)
-console.log(a)
+// heapSort(a,0,a.length - 1)
+// console.log(a)
+// console.log('计数排序', countSort(a))
+console.log('桶排序', bucketSort(a))
