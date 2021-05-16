@@ -3,7 +3,7 @@
  *
  * @param {*} [arr=[]]
  */
-function upAdjust(arr = []) {
+export function upAdjust(arr = []) {
    const childIdx = arr.length - 1;
    const parentIdx = parseInt((childIdx - 1) / 2);
    //temp 报存插入的叶子节点值 用于最后的赋值
@@ -23,7 +23,7 @@ function upAdjust(arr = []) {
  * @param {要下沉的父节点} parentIdx 
  * @param {堆的有效大小} len 
  */
-function downAdjust(arr = [], parentIdx, len) {
+export function downAdjust(arr = [], parentIdx, len) {
     // temp报存父节点值 用于最后的赋值
     const temp = arr[parentIdx]
     let childIdx = 2*parentIdx + 1

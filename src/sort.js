@@ -1,3 +1,4 @@
+import { downAdjust } from './MQ.js'
 function bubbleSort(arr = []) {
    // 记录最后一次交换的位置
    let lastExchangeIndex = 0;
@@ -113,7 +114,23 @@ function singlePartition(arr, start, end) {
       arr[mark] = pivot
       return mark
 }
+
+function heapSort(arr = []) {
+      //1. 把无序数组构建成最大堆
+      for(let i = 0; i < (arr.length - 2) / 2; i++) {
+            downAdjust(arr,i, arr.length)
+      }
+      console.log('堆', arr)
+      // 2. 循环删除堆顶元素 移到集合尾部,调整堆产生新的堆顶
+      for(let i = arr.length - 1; i > 0;i--) {
+            const temp = arr[i]
+            arr[i] = arr[0]
+            arr[0] = temp
+            // 下沉调整最大堆
+            downAdjust(arr,0,i)
+      }
+}
 let a = [2,3,0,4,1,5,6,7,9,8]
 // cockTailSort(a)
-quickSort(a,0,a.length - 1)
+heapSort(a,0,a.length - 1)
 console.log(a)
