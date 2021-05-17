@@ -110,4 +110,97 @@ function findLostNum(arr = []) {
       }
       return result
 }
-console.log('寻找缺失的整数',  findLostNum([4,1,2,2,5,1,4,3]))
+// console.log('寻找缺失的整数',  findLostNum([4,1,2,2,5,1,4,3]))
+
+//6.3 LRU算法的应用
+let head = null
+let end = null
+class Node {
+      constructor(key, value) {
+         this.key = key
+         this.value = value
+      }
+}
+class LRUCache {
+      constructor(limit) {
+            this.limit = limit;
+            this.hashMap = new Map()
+      }
+      get(key) {
+            const node = this.hashMap.get(key) 
+            if(typeof node === 'undefined')  {
+                  return null
+            }
+            this.refreshNode(node)
+            return node.value
+      }
+      put(key, value) {
+            let node = this.hashMap.get(key)
+            if (typeof node === 'undefined') {
+                  if(this.hashMap.size >= this.limit) {
+                        const oldKey = this.removeNode(head)
+                        this.hashMap.delete(oldKey)
+                  }
+                  // 如果key不存在 则插入key-value
+                  node = new Node(key, value) 
+                  this.addNode(node)
+                  this.hashMap.set(key, node)
+            } else {
+                  node.value = value
+                  this.refreshNode(node)
+            } 
+      }
+      refreshNode(node) {
+            // 如果访问的是尾节点,则无序移动节点
+            if(node === end) {
+                 return
+            }
+            // 移除节点
+            this.removeNode(node)
+            // 重新插入节点
+            this.addNode(node)     
+      }
+      removeNode(node) {
+            if(node === head && node === end) {
+                  // 移除唯一的节点
+                  head = null
+                  end = null
+            } else if(node === end) {
+                  end = end.pre
+                  end.next = null
+            } else if(node === head) {
+                  head = node.next
+                  head.pre = null 
+            } else {
+                  node.pre.next = node.next
+                  node.next.pre = node.pre
+            }
+            return node.key
+      }
+      addNode(node) {
+            if(end !== null) {
+                  end.next = node
+                  node.pre = end
+                  node.next = null
+            }
+            end = node
+            if (head === null) {
+                  head = node
+            }
+      }
+}
+
+const lruCache = new LRUCache(5)
+lruCache.put('001', '用户1')
+lruCache.put('002', '用户2')
+lruCache.put('003', '用户3')
+lruCache.put('004', '用户4')
+lruCache.put('005', '用户5')
+console.log('head', head)
+lruCache.get('002')
+console.log('head', head)
+lruCache.put('004', '用户4更新')
+console.log('head', head)
+lruCache.put('006', '用户6')
+console.log('head', head)
+
