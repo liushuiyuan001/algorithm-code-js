@@ -190,17 +190,155 @@ class LRUCache {
       }
 }
 
-const lruCache = new LRUCache(5)
-lruCache.put('001', '用户1')
-lruCache.put('002', '用户2')
-lruCache.put('003', '用户3')
-lruCache.put('004', '用户4')
-lruCache.put('005', '用户5')
-console.log('head', head)
-lruCache.get('002')
-console.log('head', head)
-lruCache.put('004', '用户4更新')
-console.log('head', head)
-lruCache.put('006', '用户6')
-console.log('head', head)
+// const lruCache = new LRUCache(5)
+// lruCache.put('001', '用户1')
+// lruCache.put('002', '用户2')
+// lruCache.put('003', '用户3')
+// lruCache.put('004', '用户4')
+// lruCache.put('005', '用户5')
+// console.log('head', head)
+// lruCache.get('002')
+// console.log('head', head)
+// lruCache.put('004', '用户4更新')
+// console.log('head', head)
+// lruCache.put('006', '用户6')
+// console.log('head', head)
 
+// 6.4 A星寻路算法
+const MAZE = [
+      [0,0,0,0,0,0,0],
+      [0,0,0,1,0,0,0],
+      [0,0,0,1,0,0,0],
+      [0,0,0,1,0,0,0]
+]
+
+function aStarSearch(start, end) {
+      let openList = []
+      let closeList = []
+      // 把起点加入 openList
+      openList.push(start)
+      // 主循环 每一轮检查一个当前方格节点
+      while(openList.length > 0) {
+            // 在openList中查找 F值最小节点 将其作为当前方格节点
+            const currentGridIndex = findMinGrid(openList)
+            const currentGrid = openList[currentGridIndex]
+            // 将当前方格节点从openList中移除
+           openList.splice(currentGridIndex,1)
+           // 当前方格节点进入 closeList
+           closeList.push(currentGrid)
+           // 找到所有邻近节点
+           const neighbors = findNeighbors(currentGrid, openList, closeList)
+           for (const grid of neighbors) {
+               // 邻近节点不在openList中,标记 父几点 G H F 并放入openList
+               if(!openList.includes(grid)) {
+                  grid.initGrid(currentGrid, end)
+                  openList.push(grid)
+               }     
+           }
+           // 如果终点在openList中 直接返回终点格子
+           for (const grid of openList) {
+                 if(grid.x === end.x && grid.y === end.y) {
+                       return grid
+                 }
+           }
+      }
+
+      // openList用尽 仍然找不到终点 说明终点不可到达 返回空
+      return null
+}
+
+function findMinGrid(openList) {
+      let temp = openList[0]
+      let i = 0
+      for (let j = 0; j < openList.length; j++) {
+         const grid = openList[j]
+         if(grid.f < temp.f) {
+               temp = grid
+               i = j
+         }     
+      }
+      return i
+}
+
+function findNeighbors(grid, openList, closeList) {
+      let gridList = []
+      if(isValidGrid(grid.x, grid.y + 1, openList, closeList)) {
+            gridList.push(new Grid(grid.x, grid.y + 1))
+      }
+      if(isValidGrid(grid.x, grid.y - 1, openList, closeList)) {
+            gridList.push(new Grid(grid.x, grid.y - 1))
+      }
+      if(isValidGrid(grid.x + 1, grid.y, openList, closeList)) {
+            gridList.push(new Grid(grid.x + 1, grid.y))
+      }
+      if(isValidGrid(grid.x - 1, grid.y, openList, closeList)) {
+            gridList.push(new Grid(grid.x - 1, grid.y))
+      }
+      return gridList
+}
+
+function isValidGrid(x,y, openList, closeList) {
+      if(x < 0 || x >= MAZE.length || y < 0 || y >= MAZE[0].length) {
+            return false
+      }
+      // 是否有障碍物
+      if (MAZE[x][y] === 1) {
+            return false
+      }
+      // 是否已经在openList中
+      if(containGrid(openList,x,y)) {
+            return false
+      }
+      // 是否已经在closeList中
+      if(containGrid(closeList,x,y)) {
+            return false
+      }
+      return true
+}
+
+function containGrid(grids,x,y) {
+      for (const grid of grids) {
+         if(grid.x === x && grid.y === y) {
+               return true
+         }     
+      } 
+      return false
+}
+
+class Grid {
+      constructor(x,y) {
+            this.x = x
+            this.y = y
+            this.f = 0
+            this.g = 0
+            this.h = 0
+            this.parent = null
+      }
+      initGrid(parent, end) {
+            this.parent = parent
+            if(parent !== null) {
+                this.g = parent.g + 1
+            }else{
+                this.g = 1
+            }
+            this.h = Math.abs(this.x - end.x) + Math.abs(this.y - end.y)
+            this.f = this.g + this.h 
+      }
+}
+
+// // 设置起点和终点
+// const startGrid = new Grid(2,1)
+// const endGrid = new Grid(2,5)
+// // 搜索迷宫终点
+// let resultGrid = aStarSearch(startGrid, endGrid)
+// // 回溯迷宫路径
+// const path = []
+// while( resultGrid !== null) {
+//       path.push(new Grid(resultGrid.x,resultGrid.y))
+//       resultGrid = resultGrid.parent
+// }
+// // 输出迷宫和路径,路径用*表示
+// for (let i = path.length - 1; i >= 0; i--) {
+//       const grid = path[i]
+//       console.log('grid', grid.x, grid.y)
+// }
