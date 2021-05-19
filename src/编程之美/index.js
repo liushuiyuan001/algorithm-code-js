@@ -22,3 +22,34 @@ function strStr(s1 = '', s2 = '') {
 
 // console.log('字符串位移包含', strStr('AABBCD','CDAA'))
 // console.log('字符串位移包含', strStr('ABCD','ACBD'))
+
+// 3.2 电话号码对应的英文单词
+const c = ["","","ABC","DEF","GHI","JKL","MNO","PQRS","TUV","WXYZ"]
+/**
+ * 
+ * @param {num} 电话号字符串 
+ */
+function getWordByNumberV1(num) {
+   const len = num.length
+   // 定义一个二维数组存储之前得到的单词
+   let result = []
+   // 先找到第一个字符所代表的单词
+   let t = []
+   for(const cc of c[num[0]]) {
+         t.push(cc)
+   }
+   result = [t]
+   for(let i = 1; i < len; i++) {
+     const temp = []
+     // 第i个数组成的单词等于 第i-1个数组成的单词和当前数代表的字符的线性乘积
+      const arr = result[i-1]
+      for (const w of arr) {
+            for (const cc of c[num[i]]) {
+                  const str = w + cc
+                  temp.push(str)
+            } 
+      }
+      result.push(temp) 
+   }
+   return result[len - 1]
+}
