@@ -53,3 +53,5 @@ function getWordByNumberV1(num) {
    }
    return result[len - 1]
 }
+
+// 3.3 字符串的相似是我

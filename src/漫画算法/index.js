@@ -342,3 +342,22 @@ class Grid {
 //       const grid = path[i]
 //       console.log('grid', grid.x, grid.y)
 // }
+
+// 6.5 红包算法
+function divideRedPackage(totalAmount, totalPeopleNum) {
+   const amountList = [];
+   let restAmount = totalAmount
+   let restPeopleNum = totalPeopleNum
+
+   for (let i = 0; i < totalPeopleNum - 1; i++) {
+       // 随机范围: [1,剩余人均金额的2倍-1] 分
+       const amount = Math.floor(Math.random() * (restAmount / restPeopleNum * 2) + 1)
+       restAmount -= amount
+       restPeopleNum--
+       amountList.push(amount)
+   }
+   amountList.push(restAmount)
+   return amountList
+}
+
+console.log('红包算法', divideRedPackage(1000,10))
