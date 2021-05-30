@@ -1,3 +1,110 @@
+// 3 树
+function TreeNode() {
+    this.data = null;
+    this.leftChild = null;
+    this.rightChild = null;
+}
+function createBinaryTree(inputList = []) {
+    let node = new TreeNode()
+    if(inputList.length === 0) {
+       return null
+    }
+    const data  = inputList.shift()
+    if(data) {
+        node.data = data
+        node.leftChild = createBinaryTree(inputList)
+        node.rightChild = createBinaryTree(inputList)
+    }
+    return node  
+}
+
+function createBinaryTreeV2(inputList = [], i) {
+    let node = new TreeNode()
+    node.data = inputList[i]
+    if (2*i + 1 < inputList.length) {
+        node.leftChild = createBinaryTreeV2(inputList, 2*i + 1)   
+    }
+    if (2*i + 2 < inputList.length) {
+        node.rightChild = createBinaryTreeV2(inputList, 2*i + 2)   
+    }
+    return node
+}
+// 前序遍历
+function preOrderTraversal(node) {
+    if(!node) {
+        return
+    }
+    console.log(node.data)
+    preOrderTraversal(node.leftChild)
+    preOrderTraversal(node.rightChild)
+}
+
+// 中序遍历
+function midOrderTraversal(node) {
+    if(!node) {
+        return
+    }
+    midOrderTraversal(node.leftChild)
+    console.log(node.data)
+    midOrderTraversal(node.rightChild)    
+}
+
+// 后序遍历
+function postOrderTraversal(node) {
+    if(!node) {
+        return
+    }
+    postOrderTraversal(node.leftChild)
+    postOrderTraversal(node.rightChild)
+    console.log(node.data)
+}
+
+// 非递归的二叉树前序遍历
+function preOrderTraversalWithStack(root) {
+    let stack = []
+    let node = root
+    while(stack.length > 0 || node) {
+        // 访问左孩子
+        while(node) {
+            console.log(node.data)
+            stack.push(node)
+            node = node.leftChild
+        }
+        // 遍历到叶子节点 或者 没有左孩子的的节点, 出栈,访问右孩子节点
+        if (stack.length > 0) {
+            node = stack.pop()
+            node = node.rightChild
+        }
+    }
+}
+// 二叉树的层序遍历
+function levelOrderTraversal(root) {
+    let stack = [root]
+    while(stack.length > 0) {
+        const node = stack.shift()
+        console.log(node.data)
+        if(node.leftChild) {
+            stack.push(node.leftChild)
+        }
+        if(node.rightChild) {
+            stack.push(node.rightChild)
+        }
+    }
+}
+// 构建二叉树
+// const treeNode = createBinaryTree([3,2,9,null,null,10,null,null,8,null,4])
+const treeNode = createBinaryTreeV2([3,2,8,9,10,null,4,null,null,null,null], 0)
+console.log('构建二叉树', treeNode)
+console.log('二叉树的前序遍历')
+preOrderTraversal(treeNode)
+console.log('二叉树的中序遍历')
+midOrderTraversal(treeNode)
+console.log('二叉树的后序遍历')
+postOrderTraversal(treeNode)
+console.log('二叉树非递归的前序遍历')
+preOrderTraversalWithStack(treeNode);
+console.log('二叉树的层序遍历')
+levelOrderTraversal(treeNode)
 //5.9 删除k个数字后的最小值
 function removeKDigits(num = '', k = 0) {
    let stack = [];
