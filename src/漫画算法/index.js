@@ -105,6 +105,307 @@ console.log('二叉树非递归的前序遍历')
 preOrderTraversalWithStack(treeNode);
 console.log('二叉树的层序遍历')
 levelOrderTraversal(treeNode)
+
+// 堆: 上浮
+function upAdjust(array) {
+    let childIdx = array.length - 1
+    let parentIdx = Math.floor((childIdx - 1) / 2) 
+    // temp 报存插入的叶子节点值 用于最后的赋值
+    let temp = array[childIdx]
+    while (childIdx > 0 && temp < array[parentIdx]) {
+        array[childIdx] = array[parentIdx]
+        childIdx = parentIdx
+        parentIdx = Math.floor((parentIdx - 1)/2)
+    }
+    array[childIdx] = temp
+}
+
+// 堆: 下沉
+function downAdjust(array, parentIdx, length) {
+    // temp 保存父节点的值 用于最后的赋值
+    let temp = array[parentIdx]
+    let childIdx = 2 * parentIdx + 1
+    while(childIdx < length) {
+        if (childIdx + 1 <  length && array[childIdx + 1] < array[childIdx]) {
+            childIdx++
+        }
+        // 如果父节点小于任何一个孩子的值 则直接跳出
+        if (temp <= array[childIdx]) {
+            break
+        }
+        // 无须真正交换,单向赋值即可
+        array[parentIdx] = array[childIdx]
+        parentIdx = childIdx
+        childIdx = 2 * childIdx + 1
+    }
+    array[parentIdx] = temp
+}
+
+function buildHeap(array = []) {
+    // 从最后一个非叶子节点开始,依次做 下沉 调整
+    for(let i = Math.floor((array.length - 2)/2); i >= 0; i--){
+        downAdjust(array,i, array.length)       
+    }
+}
+
+// 优先队列入队
+function enQueue(array, value) {
+    array.push(value)
+    upAdjust(array)
+}
+
+// 优先队列出队列
+function deQueue(array) {
+   const head =  array[0]
+   array[0] = array[array.length - 1]
+   array.pop()
+   downAdjust(array,0,array.length - 1)
+   return head
+}
+
+let heapArr = [1,3,2,6,5,7,8,9,10,0]
+upAdjust(heapArr)
+console.log('堆上浮(添加新节点)', heapArr)
+
+let heapArr2 = [7,1,3,10,5,2,8,9,6]
+buildHeap(heapArr2)
+console.log('构建二叉堆', heapArr2)
+
+let priorityQueue = [1,3,2,6,5,7,8,9]
+enQueue(priorityQueue, 10)
+// enQueue(priorityQueue, 0)
+console.log('优先队列入队', priorityQueue)
+deQueue(priorityQueue)
+console.log('优先队列出队', priorityQueue)
+// 4: 排序
+// 冒泡排序 优化
+function bubbleSort(array = []) {
+    // 记录最后一次交换位置
+    let lastExchangeIndex = 0
+    // 无序数列的边界, 每次比较只需要比到这里问止
+    let sortBorder = array.length - 1
+    for (let i = 0; i < array.length; i++) {
+        let  isSorted = true
+        for (let j = 0; j < sortBorder; j++) {
+            if(array[j] > array[j+1]) {
+                const temp = array[j]
+                array[j] = array[j+1]
+                array[j+1] = temp
+                // 因为有元素进行交换 所有不是有序的 标记变为false
+                isSorted = false
+                lastExchangeIndex = j
+            }
+        }
+        sortBorder = lastExchangeIndex
+        if(isSorted) {
+            break
+        }
+    }
+}
+function cockTailSort(array) {
+    for (let i = 0; i < array.length / 2; i++) {
+        let isSorted = true
+        for(let j = i; j < array.length - i - 1; j++) {
+            if(array[j] > array[j + 1]) {
+                const temp = array[j]
+                array[j] = array[j+1]
+                array[j+1] = temp
+                isSorted = false
+            }
+        }
+        if (isSorted) {
+            break
+        }
+        isSorted = true
+        for(let j = array.length - i - 1; j > i;j--) {
+            if(array[j] < array[j-1]) {
+                const temp = array[j]
+                array[j] = array[j - 1]
+                array[j - 1] = temp
+                isSorted = false
+            }
+        }
+        if(isSorted) {
+            break
+        }
+    }
+}
+function quickSort(arr, start, end) {
+    if(start >= end) {
+        return
+    }
+    // 拿到基准元素位置
+    const mid = singlePartition(arr, start, end)
+    quickSort(arr,start, mid - 1)
+    quickSort(arr,mid + 1, end) 
+}
+
+function partition(arr, start, end) {
+    let left = start
+    let right = end
+    const pivot = arr[start]
+    while(left < right) {
+        while(left < right && arr[right] > pivot) {
+            right--
+        }
+
+        while(left < right && arr[left] <= pivot) {
+            left++
+        }
+        
+        if(left < right) {
+            const temp = arr[left]
+            arr[left] = arr[right]
+            arr[right] = temp
+        }
+    }
+
+    arr[start] = arr[left]
+    arr[left] = pivot 
+    return left
+}
+function singlePartition(arr, start, end) {
+   let mark = start
+   const pivot = arr[start]
+   for(let i = start + 1; i <= end; i++) {
+       if(arr[i] < pivot) {
+           mark++
+           const temp = arr[mark]
+           arr[mark] = arr[i]
+           arr[i] = temp
+       }
+   }
+   arr[start] = arr[mark]
+   arr[mark] = pivot
+   return mark
+}
+
+function quickSortByStack(arr, start, end) {
+    let stack = [{start: start, end: end}]
+    while(stack.length > 0) {
+        const param = stack.pop()
+        const mid = partition(arr, param.start, param.end)
+        if(mid - 1 > param.start) {
+            stack.push({start: param.start, end: mid - 1})
+            quickSortByStack(arr, param.start, mid - 1)
+        }
+        if(mid + 1 < param.end) {
+            stack.push({ start: mid + 1, end: param.end })
+        }
+    }
+}
+let  arr = [3,4,2,1,5,6,7,8]
+// bubbleSort(arr)
+// console.log('冒泡排序', arr)
+// cockTailSort(arr)
+// console.log('鸡尾酒排序', arr)
+// console.log('快速排序')
+// quickSort(arr,0,7)
+// console.log(arr)
+// console.log('快速排序非递归写法')
+// quickSortByStack(arr,0,7)
+// console.log(arr)
+function heapSort(array) {
+    //1. 把无序数组构建成最大堆
+    for(let i = Math.floor((array.length - 2)/2); i >= 0; i--){
+        downAdjust(array,i, array.length)
+    }
+    // 2. 循环删除堆顶元素 移到集合尾部, 调整堆产生新的堆顶
+    for(let i = array.length - 1; i > 0; i--) {
+        // 最后1个元素和第1个元素进行交换
+        const temp = array[i]
+        array[i] = array[0]
+        array[0] = temp
+        // 下沉 调整堆
+        downAdjust(array,0,i)
+    }
+}
+// console.log('堆排序')
+// let heapSortArr = [1,3,2,6,5,7,8,9,10,0]
+// heapSort(heapSortArr)
+// console.log(heapSortArr)
+function countSort(array) {
+    //1. 得到最大值和最小值 并计算出差值d
+    let max = array[0]
+    let min = array[0]
+    for(let i = 1; i < array.length; i++) {
+        if(array[i] > max) {
+            max = array[i]
+        }
+        if(array[i] < min) {
+            min = array[i]
+        }
+    }
+    let d = max - min
+    let countArray = new Array(d+1)
+    countArray.fill(0)
+    
+    //2. 创建统计数组并统计对应元素的个数
+    for(let i = 0; i < array.length; i++) {
+        countArray[array[i] - min]++
+    }
+    
+    //3. 统计数组做变形,后面的元素等于前面的元素之和
+    for(let i = 1; i < countArray.length; i++) {
+        countArray[i] += countArray[i - 1]
+    }
+
+    //4. 倒序遍历原始数列 从统计数组找到正确位置 输出到结果数组
+    let sortArr = []
+    for(let i = array.length - 1; i >= 0; i--) {
+        // array[i] - min 获取当前元素在计数数组的次数之总(即此元素在总的数据的位置)
+        // array[i] - min - 1 为当前元素在排序数组中的位置下标: 需要把位置之和 - 1 即可 
+        sortArr[countArray[array[i] - min] - 1] = array[i]
+        countArray[array[i] - min]--
+    }
+
+    return sortArr
+}
+// let countSortArray = [95,94,91,98,99,90,99,93,91,92]
+// console.log('计数排序', countSort(countSortArray))
+// 桶排序
+function buckerSort(array) {
+    // 1. 得到数列的最大值和最小值 并计算出差值d
+    let max = array[0]
+    let min = array[0]
+    for(let i = 1; i < array.length; i++) {
+        if(max < array[i]) {
+            max = array[i]
+        }
+        if(min > array[i]) {
+            min = array[i]
+        }
+    }
+    // 2. 初始化桶
+    const d = max - min
+    const bucketNum = array.length
+    let bucketList = []
+    // 3. 遍历原始数组 将每个元素放入桶中
+    for(let i = 0; i < array.length; i++) {
+        const num = Math.ceil((array[i] - min) * (bucketNum - 1) / d)
+        console.log('num', num)
+        if(!bucketList[num]) {
+            bucketList[num] = []
+        }
+        bucketList[num].push(array[i])
+    }
+    console.log(bucketList)
+    // 4. 对每个桶内部进行排序,并进行输出
+    let sortedArrary = []
+    let j = 0
+    console.log(bucketList)
+    for (const bucket of bucketList) {
+        if(bucket) {
+            bucket.sort()
+            for (const item of bucket) {
+               sortedArrary[j++] = item   
+            }
+        }
+    }
+    
+    return sortedArrary
+}
+console.log('桶排序', buckerSort([4.12,6.421,0.0023,3.0,2.123,8.1222,4.12,10.09]))
 //5.9 删除k个数字后的最小值
 function removeKDigits(num = '', k = 0) {
    let stack = [];
