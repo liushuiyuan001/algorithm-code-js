@@ -473,7 +473,91 @@ var merge = function(nums1, m, nums2, n) {
            nums1[p++] = nums2[p2++]
        }
 };
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {void} Do not return anything, modify root in-place instead.
+ */
+var recoverTree = function(root) {
+    // 从上往下思考则脑子不容易推断 依然从下网上思考
+    // 假如只有一个节点或者空节点不需要恢复
+    // 假如只有一个左叶子节点和右叶子节点的话 则需要交换节点和左或右叶子节点
+    // 假如有两个叶子节点的话 则可能 根和左、右节点交换或者左右叶子节点之间交换
+    // 假如子节点不是叶子节点的话 则根节点和左节点交换、根节点和右节点交换、或者左右子节点交换
 
+    // 二叉搜索树 左子节点比根节点小 右子节点比根节点大
+
+    // 节点的值被错误的交换
+
+    // 要求不改变结果 恢复这棵树
+
+    // 涉及到树 则肯定需要对树遍历 二叉搜索树 遍历后 肯定是递归的  如果两个值被错误的交换了 则会出现当前值比左边的最大值小
+    // 错误交换会出现两种情况 第一种   1 3 2 4 5 6  这种相邻的错误 那么错误的下标为 x 和 x+1
+    // 第二种情况  1 5 3 4 2 6  这种情况 2 和 5 交互。这种错误的下标为 第一对 相邻下降（5,3）的第一个5 和 第二对 相邻下降（4,2）的第二个2
+
+    // 遍历二叉搜索树,放在数组中
+    let result = []
+    const walkTree = (node) => {
+        if(!node) {
+            return
+        }
+    
+        walkTree(node.left)
+        result.push(node)
+        walkTree(node.right)
+    }
+
+    walkTree(root)
+
+    // 找出错误的两个节点的下标
+    const findTwoSwapped = (nums) => {
+        const n = nums.length;
+        let index1 = -1, index2 = -1;
+        for (let i = 0; i < n - 1; ++i) {
+            if (nums[i + 1].val < nums[i].val) {
+                index2 = i + 1;
+                if (index1 === -1) {
+                    index1 = i;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return [index1, index2];
+    }
+
+    const idx = findTwoSwapped(result)
+
+    // 交换两个节点值
+    const val = result[idx[0]].val
+    result[idx[0]].val = result[idx[1]].val
+    result[idx[1]].val = val
+};
+
+let test = {
+    val: 1,
+    right: null,
+    left: {
+        val: 3,
+        left: null,
+        right: {
+            val: 2,
+            left: null,
+            right: null
+        }
+    }
+}
+
+recoverTree(test)
+console.log(test)
 /**
  * Definition for a binary tree node.
  * function TreeNode(val, left, right) {
